@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TomeStone (dev)": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
