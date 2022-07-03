@@ -1,28 +1,33 @@
-﻿using TomeStone;
+﻿using TomeStone.CLI;
 using TomeStone.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
 
 
 static void ConfigureServices(IServiceCollection services)
 {
-    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONNMENT");
+    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
     var builder = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json", optional: false)
         .AddEnvironmentVariables();
+        
 
     if (env == "Development")
     {
         builder.AddUserSecrets<Program>();
     }
 
-    var config = builder.Build();
+
+    IConfigurationRoot? config = builder.Build();
+
+    services.AddHttpClient<IXIVAPIClient, XIVAPIClient>();
 
     services.Configure<TomeStoneOptions>(config.GetSection("XIVAPI"));
 
-    services.AddTransient<IApp, App>();
+    services.AddTransient<ITomeStoneCLI, TomeStoneCLI>();
 }
 
 
@@ -31,4 +36,4 @@ ConfigureServices(Services);
 
 using var ServiceProvider = Services.BuildServiceProvider();
 
-await ServiceProvider.GetService<IApp>()!.Run(args);
+await ServiceProvider.GetService<ITomeStoneCLI>()!.Run(args);
